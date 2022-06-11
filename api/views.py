@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView, ListAPIView, DestroyAPIView, RetrieveAPIView, CreateAPIView, \
@@ -9,9 +9,10 @@ from rest_framework.generics import GenericAPIView, ListAPIView, DestroyAPIView,
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin, DestroyModelMixin, \
     UpdateModelMixin
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet, ViewSet
 
-from api.models import Product, Category
-from api.serializer import  CategorySerializers, ProductsSerializers
+from api.models import Product, Category, Review
+from api.serializer import CategorySerializers, ProductsSerializers, ReviewSerializer
 
 
 # class ProductApi(APIView):
@@ -194,61 +195,78 @@ class CategoryDeleteApi(DestroyAPIView):
 
 # If we Want to Customize our detail in Generic View ........
 
-# class ProductLists(ListAPIView):
-#
-#     def get_queryset(self):
-#         return Product.objects.select_related('category').all()
-#
-#     def get_serializer_class(self):
-#         return ProductsSerializers
-#
-#     def get_serializer_context(self):
-#         return self.request
-#
-#
-# class ProductDetails(RetrieveAPIView):
-#
-#     def get_queryset(self):
-#         return Product.objects.select_related('category').all()
-#
-#     def get_serializer_class(self):
-#         return ProductsSerializers
-#
-#     def get_serializer_context(self):
-#         return self.request
-#
-#
-# class ProductUpdates(UpdateAPIView):
-#
-#     def get_queryset(self):
-#         return Product.objects.select_related('category').all()
-#
-#     def get_serializer_class(self):
-#         return ProductsSerializers
-#
-#     def get_serializer_context(self):
-#         return self.request
-#
-#
-# class ProductCreates(CreateAPIView):
-#
-#     def get_queryset(self):
-#         return Product.objects.select_related('category').all()
-#
-#     def get_serializer_class(self):
-#         return ProductsSerializers
-#
-#     def get_serializer_context(self):
-#         return self.request
-#
-#
-# class ProductDeletes(DestroyAPIView):
-#
-#     def get_queryset(self):
-#         return Product.objects.select_related('category').all()
-#
-#     def get_serializer_class(self):
-#         return ProductsSerializers
-#
-#     def get_serializer_context(self):
-#         return self.request
+class ProductLists(ListAPIView):
+
+    def get_queryset(self):
+        return Product.objects.select_related('category').all()
+
+    def get_serializer_class(self):
+        return ProductsSerializers
+
+    def get_serializer_context(self):
+        return self.request
+
+
+class ProductDetails(RetrieveAPIView):
+
+    def get_queryset(self):
+        return Product.objects.select_related('category').all()
+
+    def get_serializer_class(self):
+        return ProductsSerializers
+
+    def get_serializer_context(self):
+        return self.request
+
+
+class ProductUpdates(UpdateAPIView):
+
+    def get_queryset(self):
+        return Product.objects.select_related('category').all()
+
+    def get_serializer_class(self):
+        return ProductsSerializers
+
+    def get_serializer_context(self):
+        return self.request
+
+
+class ProductCreates(CreateAPIView):
+
+    def get_queryset(self):
+        return Product.objects.select_related('category').all()
+
+    def get_serializer_class(self):
+        return ProductsSerializers
+
+    def get_serializer_context(self):
+        return self.request
+
+
+class ProductDeletes(DestroyAPIView):
+
+    def get_queryset(self):
+        return Product.objects.select_related('category').all()
+
+    def get_serializer_class(self):
+        return ProductsSerializers
+
+    def get_serializer_context(self):
+        return self.request
+
+
+class ProductModelViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        return Product.objects.select_related('category').all()
+
+    serializer_class = ProductsSerializers
+
+
+class CategoryModelViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializers
+
+
+class ReviewModelViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer

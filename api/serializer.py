@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from api.models import Product, Category
+from api.models import Product, Category, Review
 
 
 #
@@ -35,6 +35,7 @@ class CategorySerializers(serializers.Serializer):
 
 class ProductsSerializers(serializers.ModelSerializer):
     tax_price = serializers.SerializerMethodField(method_name='calculated_tax')
+    # category = serializers.StringRelatedField(many=True,read_only=True,source='category-detail')
     unit_price = serializers.DecimalField(max_digits=6, decimal_places=2, source='price')
 
     class Meta:
@@ -43,3 +44,11 @@ class ProductsSerializers(serializers.ModelSerializer):
 
     def calculated_tax(self, product: Product):
         return product.price * Decimal(1.5)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    # product = serializers.StringRelatedField(read_only=True,many=True,source='')
+    class Meta:
+        model = Review
+        fields = ['product','name','description']
+
