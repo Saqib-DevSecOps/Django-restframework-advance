@@ -1,8 +1,10 @@
 from django.shortcuts import render
 
 # Create your views here.
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView, ListAPIView, DestroyAPIView, RetrieveAPIView, CreateAPIView, \
     UpdateAPIView
@@ -11,8 +13,11 @@ from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateMode
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
+from api.filters import ProductFilter
 from api.models import Product, Category, Review
+from api.pagination import CustomPagination
 from api.serializer import CategorySerializers, ProductsSerializers, ReviewSerializer
+from rest_framework.pagination import PageNumberPagination
 
 
 # class ProductApi(APIView):
@@ -198,7 +203,11 @@ class CategoryDeleteApi(DestroyAPIView):
 class ProductLists(ListAPIView):
 
     def get_queryset(self):
-        return Product.objects.select_related('category').all()
+        product = Product.objects.select_related('collection').object.all()
+        category = self.request.query_params.get['collection_id']
+        if category is not None:
+            product.filter(category__id=category)
+        return product
 
     def get_serializer_class(self):
         return ProductsSerializers
@@ -256,10 +265,14 @@ class ProductDeletes(DestroyAPIView):
 
 
 class ProductModelViewSet(viewsets.ModelViewSet):
-    def get_queryset(self):
-        return Product.objects.select_related('category').all()
-
+    queryset = Product.objects.select_related('category').all()
     serializer_class = ProductsSerializers
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = ProductFilter
+    search_fields = ['title']
+    ordering_fields = ['title']
+    # filterset_fields = ['title','category']
+    pagination_class = CustomPagination
 
 
 class CategoryModelViewSet(viewsets.ModelViewSet):
@@ -268,5 +281,10 @@ class CategoryModelViewSet(viewsets.ModelViewSet):
 
 
 class ReviewModelViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        return Review.objects.filter(product_id=self.kwargs['product_pk'])
+
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs['product_pk']}
