@@ -265,14 +265,23 @@ class ProductDeletes(DestroyAPIView):
 
 
 class ProductModelViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.select_related('category').all()
-    serializer_class = ProductsSerializers
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
     search_fields = ['title']
     ordering_fields = ['title']
     # filterset_fields = ['title','category']
     pagination_class = CustomPagination
+
+    def get_queryset(self):
+        return Product.objects.select_related('category').all()
+
+    def get_serializer_class(self):
+        return ProductsSerializers
+
+    def get_serializer_context(self):
+        context =  super(ProductModelViewSet, self).get_serializer_context()
+        context['total'] = self.get_queryset().count()
+        return context
 
 
 class CategoryModelViewSet(viewsets.ModelViewSet):
