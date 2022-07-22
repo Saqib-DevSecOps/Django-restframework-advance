@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from api.models import Product, Category, Review
+from api.models import Product, Category, Review, Cart, cart_item
 
 
 #
@@ -40,7 +40,7 @@ class ProductsSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['title', 'unit_price', 'tax_price','inventory','category']
+        fields = ['title', 'unit_price', 'tax_price', 'inventory', 'category']
 
     def calculated_tax(self, product: Product):
         return product.price * Decimal(1.5)
@@ -50,10 +50,61 @@ class ReviewSerializer(serializers.ModelSerializer):
     # product = serializers.StringRelatedField(read_only=True,many=True,source='')
     class Meta:
         model = Review
-        fields = ['product','name','description']
+        fields = ['product', 'name', 'description']
+
+
+class CreateReviewSerializer(serializers.ModelSerializer):
+    # product = serializers.StringRelatedField(read_only=True,many=True,source='')
+    class Meta:
+        model = Review
+        fields = ['name', 'description']
 
     def create(self, validated_data):
         product_id = self.context['product_id']
-        review = Review.objects.create(product_id=product_id,**validated_data)
+        review = Review.objects.create(product_id=product_id, **validated_data)
         return review
 
+
+class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductsSerializers(required=False)
+
+    class Meta:
+        model = cart_item
+        fields = ['product', 'quantity']
+
+
+class CartSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+    cart = CartItemSerializer(many=True, required=False, read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'cart', ]
+
+
+
+
+class CreateCartSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    def create(self, validated_data):
+        cart = self.context['cart']
+        print(cart)
+        product = self.validated_data['product']
+        quantity = self.validated_data['quantity']
+        print(quantity)
+        cart, created= cart_item.objects.get_or_create(cart_id = cart,product = product)
+        cart.quantity = quantity+cart.quantity
+        cart.save()
+        self.instance = cart
+        return self.instance
+
+    class Meta:
+        model = cart_item
+        fields = ['id', 'product', 'quantity']
+
+
+class UpdateCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = cart_item
+        fields = ['quantity']

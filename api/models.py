@@ -39,11 +39,11 @@ class Cart(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return id
+        return str(self.id)
 
 class cart_item(models.Model):
-    cart = models.ForeignKey(Cart,on_delete=models.CASCADE)
-    product = models.ForeignKey(Product,on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart,on_delete=models.CASCADE,related_name='cart')
+    product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='product')
     quantity = models.IntegerField(default=0)
 
     def __str__(self):
