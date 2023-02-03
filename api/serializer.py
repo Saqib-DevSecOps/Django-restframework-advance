@@ -27,7 +27,7 @@ class ProductSerializer(serializers.Serializer):
     category_str = serializers.StringRelatedField(source='category')
     # ________Nested object Serializer field________
     category = CategorySerializer()
-
+    # ________HyperLink Serializer field________
     category_hyp = serializers.HyperlinkedRelatedField(queryset=Category.objects.all(),
                                                    view_name='category-detail',source='category')
 
