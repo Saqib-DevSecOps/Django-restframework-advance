@@ -7,8 +7,19 @@ from api.models import Category, Product
 """_______________________Category Serializer_____________________"""
 
 
-class CategorySerializer(serializers.Serializer):
-    title = serializers.CharField(max_length=200)
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['title', ]
+
+    def create(self, validated_data):
+        category = Category(**validated_data)
+        category.save()
+        return category
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title')
+        return instance
 
 
 """________________________PRODUCT SERIALIZER_____________________"""
