@@ -29,7 +29,51 @@ class ProductSerializer(serializers.Serializer):
     category = CategorySerializer()
     # ________HyperLink Serializer field________
     category_hyp = serializers.HyperlinkedRelatedField(queryset=Category.objects.all(),
-                                                   view_name='category-detail',source='category')
+                                                       view_name='category-detail', source='category')
 
     def tax_calculation(self, product: Product):
         return product.price * Decimal(1.10)
+
+
+"""_________________________Product Model Serializer____________"""
+
+
+class ProductMSerializer(serializers.ModelSerializer):
+    price_tax = serializers.SerializerMethodField(method_name='tax_calculation')
+
+    class Meta:
+        model = Product
+        fields = ['title', 'price', 'inventory', 'category', 'price_tax']
+        read_only_fields = ['price_tax']
+
+    # ________________Custom Methods_______________
+    def tax_calculation(self, product: Product):
+        return product.price * Decimal(1.10)
+
+    # ______________________________________________
+
+    # ____________For data Validation______________
+    def validate(self, data):
+        if data['title'] == "Saqib":
+            return serializers.ValidationError("Saqib should not be used")
+        return data
+
+    # ______________________________________________
+    # ________For Saving Objects___________________
+
+    def create(self, validated_data):
+        product = Product(**validated_data)
+        product.is_available = True
+        product.save()
+        return product
+
+    # ______________________________________________
+    # ___________For Updating Objects_______________
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title')
+        instance.category = validated_data.get('category')
+        instance.price = validated_data.get('price')
+        instance.inventory = validated_data.get('inventory')
+        instance.save()
+        return instance
+    # _______________________________________________
