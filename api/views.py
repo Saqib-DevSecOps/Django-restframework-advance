@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from api.models import Product, Category
 from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer
@@ -81,6 +82,96 @@ def category_detail(request, pk):
         category_serializer.save()
         return Response(category_serializer.data, status=status.HTTP_201_CREATED)
     elif request.method == "DELETE":
+        category.delete()
+        category.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+"""-----------------------------------------------------------"""
+
+"""--------------------Product Class Based View--------------------"""
+
+
+class ProductList(APIView):
+    def get(self, request):
+        product = Product.objects.select_related('category').all()
+        product_serializer = ProductMSerializer(product, many=True, context={'request': request})
+        return Response(product_serializer.data)
+
+    def post(self, request):
+        product = ProductMSerializer(data=request.data)
+        product.is_valid(raise_exception=True)
+        product.save()
+        return Response(product.data, status=status.HTTP_201_CREATED)
+
+
+class ProductDetail(APIView):
+    def get(self, request, pk):
+        product = get_object_or_404(Product, id=pk)
+        product_serializer = ProductMSerializer(product)
+        return Response(product_serializer.data)
+
+    def put(self, request, pk):
+        product = get_object_or_404(Product, id=pk)
+        product_serializer = ProductMSerializer(product, data=request.data)
+        product_serializer.is_valid(raise_exception=True)
+        product_serializer.save()
+        return Response(product_serializer.data, status=status.HTTP_201_CREATED)
+
+    def patch(self, request, pk):
+        product = get_object_or_404(Product, id=pk)
+        product_serializer = ProductMSerializer(product, data=request.data)
+        product_serializer.is_valid(raise_exception=True)
+        product_serializer.save()
+        return Response(product_serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, pk):
+        product = get_object_or_404(Product, id=pk)
+        product.delete()
+        product.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+"""-----------------------------------------------------------"""
+
+"""--------------------Category Class Based View--------------------"""
+
+
+class CategoryList(APIView):
+    def get(self, request):
+        category = Category.objects.all()
+        category_serializer = CategorySerializer(category, many=True, context={'request': request})
+        return Response(category_serializer.data)
+
+    def post(self, request):
+        category = CategorySerializer(data=request.data)
+        category.is_valid(raise_exception=True)
+        category.save()
+        return Response(category.data, status=status.HTTP_201_CREATED)
+
+
+class CategoryDetail(APIView):
+    def get(self, request, pk):
+        category = get_object_or_404(Category, id=pk)
+        category_serializer = CategorySerializer(category)
+        return Response(category_serializer.data)
+
+    def put(self, request, pk):
+        category = get_object_or_404(Category, id=pk)
+        category_serializer = CategorySerializer(category, data=request.data)
+        category_serializer.is_valid(raise_exception=True)
+        category_serializer.save()
+        return Response(category_serializer.data, status=status.HTTP_201_CREATED)
+
+    def patch(self, request, pk):
+        category = get_object_or_404(Category, id=pk)
+        category_serializer = CategorySerializer(category, data=request.data)
+        category_serializer.is_valid(raise_exception=True)
+        category_serializer.save()
+        return Response(category_serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, pk):
+        category = get_object_or_404(Category, id=pk)
         category.delete()
         category.save()
         return Response(status=status.HTTP_200_OK)
