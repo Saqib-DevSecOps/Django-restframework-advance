@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from api.models import Product, Category
 from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer
 
+"""--------------------Product Api View--------------------"""
+
 
 @api_view(['GET', 'POST'])
 def product_list(request):
@@ -44,8 +46,44 @@ def product_detail(request, pk):
         return Response(status=status.HTTP_200_OK)
 
 
-@api_view()
+"""-----------------------------------------------------------"""
+
+"""--------------------Category Api View--------------------"""
+
+
+@api_view(['GET', 'POST'])
+def category_list(request):
+    if request.method == 'GET':
+        category = Category.objects.all()
+        serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        category = CategorySerializer(data=request.data)
+        category.is_valid(raise_exception=True)
+        category.save()
+        return Response(category.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 def category_detail(request, pk):
     category = get_object_or_404(Category, id=pk)
-    serializer = CategorySerializer(category)
-    return Response(serializer.data)
+    if request.method == "GET":
+        category_serializer = CategorySerializer(category)
+        return Response(category_serializer.data)
+    elif request.method == "PUT":
+        category_serializer = CategorySerializer(category, data=request.data)
+        category_serializer.is_valid(raise_exception=True)
+        category_serializer.save()
+        return Response(category_serializer.data, status=status.HTTP_201_CREATED)
+    elif request.method == "PATCH":
+        category_serializer = CategorySerializer(category, data=request.data)
+        category_serializer.is_valid(raise_exception=True)
+        category_serializer.save()
+        return Response(category_serializer.data, status=status.HTTP_201_CREATED)
+    elif request.method == "DELETE":
+        category.delete()
+        category.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+"""-----------------------------------------------------------"""
