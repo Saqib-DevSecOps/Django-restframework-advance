@@ -1,6 +1,8 @@
 import status
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import response, mixins
 from rest_framework.decorators import api_view
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import get_object_or_404, GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -8,6 +10,8 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import Product, Category, Review
+from api.filters import ProductFilter
+from api.pagination import DefaultPaginationCLass
 from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer, ReviewModelSerializer
 
 """--------------------Product Api View--------------------"""
@@ -291,14 +295,26 @@ class CategoryRetrieveUpdateDeleteApiView(RetrieveUpdateDestroyAPIView):
 
 class ProductViewSet(ModelViewSet):
     serializer_class = ProductMSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter,OrderingFilter]
+    # For Generic Filter
+    filterset_class = ProductFilter
+    # For searching
+    search_fields = ['title', 'category__title']
+    # For Ordering
+    ordering_fields = ['price']
+    # For Pagination
+    pagination_class = DefaultPaginationCLass
+
 
     def get_queryset(self):
         queryset = Product.objects.select_related('category').all()
-        # For Custom Filtering
+        # ===========For Custom Filtering============
+        """
         category_id = self.request.query_params.get('category_id')
         print(category_id)
         if category_id:
             return queryset.filter(category_id=category_id)
+        """
         return queryset
 
 

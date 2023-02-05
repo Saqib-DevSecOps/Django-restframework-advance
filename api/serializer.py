@@ -95,6 +95,8 @@ class ProductMSerializer(serializers.ModelSerializer):
 
 
 class ReviewModelSerializer(serializers.ModelSerializer):
+    product = serializers.StringRelatedField()
+
     class Meta:
         model = Review
         fields = ['id', 'product', 'name', 'description']
