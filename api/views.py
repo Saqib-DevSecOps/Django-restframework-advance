@@ -286,3 +286,22 @@ class CategoryRetrieveUpdateDeleteApiView(RetrieveUpdateDestroyAPIView):
 
 """------------------------------------------------------------------"""
 
+"""--------------------------PRODUCT VIEWSET API----------------------"""
+
+
+class ProductViewSet(ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductMSerializer
+
+
+"""------------------------------------------------------------------"""
+
+"""--------------------------CATEGORY VIEWSET API----------------------"""
+
+
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+"""------------------------------------------------------------------"""
