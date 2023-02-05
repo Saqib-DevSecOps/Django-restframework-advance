@@ -5,6 +5,7 @@ from rest_framework.generics import get_object_or_404, GenericAPIView, ListCreat
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 
 from api.models import Product, Category
 from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer
@@ -258,7 +259,7 @@ class CategoryUpdateDeleteView(mixins.UpdateModelMixin,
 """--------------------Product GENERIC API View--------------------"""
 
 
-class ProductListTCreateApiView(ListCreateAPIView):
+class ProductListCreateApiView(ListCreateAPIView):
     queryset = Product.objects.select_related('category').all()
     serializer_class = ProductMSerializer
 
@@ -273,7 +274,7 @@ class ProductRetrieveUpdateDeleteApiView(RetrieveUpdateDestroyAPIView):
 """--------------------Category GENERIC API View--------------------"""
 
 
-class CategoryListTCreateApiView(ListCreateAPIView):
+class CategoryListCreateApiView(ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
@@ -284,3 +285,4 @@ class CategoryRetrieveUpdateDeleteApiView(RetrieveUpdateDestroyAPIView):
 
 
 """------------------------------------------------------------------"""
+
