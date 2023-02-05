@@ -1,7 +1,7 @@
 import status
 from rest_framework import response, mixins
 from rest_framework.decorators import api_view
-from rest_framework.generics import get_object_or_404, GenericAPIView
+from rest_framework.generics import get_object_or_404, GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -251,6 +251,36 @@ class CategoryUpdateDeleteView(mixins.UpdateModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+
+"""------------------------------------------------------------------"""
+
+"""--------------------Product GENERIC API View--------------------"""
+
+
+class ProductListTCreateApiView(ListCreateAPIView):
+    queryset = Product.objects.select_related('category').all()
+    serializer_class = ProductMSerializer
+
+
+class ProductRetrieveUpdateDeleteApiView(RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.select_related('category').all()
+    serializer_class = ProductMSerializer
+
+
+"""------------------------------------------------------------------"""
+
+"""--------------------Category GENERIC API View--------------------"""
+
+
+class CategoryListTCreateApiView(ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class CategoryRetrieveUpdateDeleteApiView(RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 
 """------------------------------------------------------------------"""
