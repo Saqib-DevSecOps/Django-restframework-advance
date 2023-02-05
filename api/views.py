@@ -9,10 +9,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from api.models import Product, Category, Review
+from api.models import Product, Category, Review, Cart, cart_item
 from api.filters import ProductFilter
 from api.pagination import DefaultPaginationCLass
-from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer, ReviewModelSerializer
+from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer, ReviewModelSerializer, \
+    CartSerializer, CartItemSerializer
 
 """--------------------Product Api View--------------------"""
 
@@ -52,8 +53,6 @@ def product_detail(request, pk):
         return Response(status=status.HTTP_200_OK)
 
 
-"""-----------------------------------------------------------"""
-
 """--------------------Category Api View--------------------"""
 
 
@@ -91,8 +90,6 @@ def category_detail(request, pk):
         category.save()
         return Response(status=status.HTTP_200_OK)
 
-
-"""-----------------------------------------------------------"""
 
 """--------------------Product Class Based View--------------------"""
 
@@ -137,8 +134,6 @@ class ProductDetail(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-"""-----------------------------------------------------------"""
-
 """--------------------Category Class Based View--------------------"""
 
 
@@ -182,8 +177,6 @@ class CategoryDetail(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-"""-----------------------------------------------------------"""
-
 """--------------------Product Mixin View--------------------"""
 
 
@@ -219,8 +212,6 @@ class ProductUpdateDeleteView(mixins.UpdateModelMixin,
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
-
-"""------------------------------------------------------------------"""
 
 """--------------------Category Mixin View--------------------"""
 
@@ -258,8 +249,6 @@ class CategoryUpdateDeleteView(mixins.UpdateModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-"""------------------------------------------------------------------"""
-
 """--------------------Product GENERIC API View--------------------"""
 
 
@@ -272,8 +261,6 @@ class ProductRetrieveUpdateDeleteApiView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.select_related('category').all()
     serializer_class = ProductMSerializer
 
-
-"""------------------------------------------------------------------"""
 
 """--------------------Category GENERIC API View--------------------"""
 
@@ -288,14 +275,12 @@ class CategoryRetrieveUpdateDeleteApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = CategorySerializer
 
 
-"""------------------------------------------------------------------"""
-
 """--------------------------PRODUCT VIEWSET API----------------------"""
 
 
 class ProductViewSet(ModelViewSet):
     serializer_class = ProductMSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter,OrderingFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     # For Generic Filter
     filterset_class = ProductFilter
     # For searching
@@ -304,7 +289,6 @@ class ProductViewSet(ModelViewSet):
     ordering_fields = ['price']
     # For Pagination
     pagination_class = DefaultPaginationCLass
-
 
     def get_queryset(self):
         queryset = Product.objects.select_related('category').all()
@@ -318,8 +302,6 @@ class ProductViewSet(ModelViewSet):
         return queryset
 
 
-"""------------------------------------------------------------------"""
-
 """--------------------------CATEGORY VIEWSET API----------------------"""
 
 
@@ -328,7 +310,6 @@ class CategoryViewSet(ModelViewSet):
     serializer_class = CategorySerializer
 
 
-"""------------------------------------------------------------------"""
 """--------------------------CATEGORY VIEWSET API----------------------"""
 
 
@@ -344,4 +325,45 @@ class ReviewModelViewSet(ModelViewSet):
         return {'product_id': self.kwargs['product_pk']}
 
 
-"""------------------------------------------------------------------"""
+"""--------------------------Cart VIEWSET API----------------------"""
+
+
+class CartModelViewSet(ModelViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+
+
+"--------------------------CartItem VIEWSET API----------------------"
+
+
+class CartItemModelViewSet(ModelViewSet):
+    queryset = cart_item.objects.all()
+    serializer_class = CartItemSerializer
+
+    def get_queryset(self):
+        return self.queryset.select_related('product')
+
+    def get_serializer_context(self):
+        return {'cart_id': self.kwargs['cart_pk'], 'request': self.request}
+
+
+"--------------------------CartItem Generic API----------------------"
+
+
+class CartItemListVIew(ListCreateAPIView):
+    queryset = cart_item.objects.all()
+    serializer_class = CartItemSerializer
+
+    def get_serializer_context(self):
+        return {'cart_id': self.kwargs['cart_pk'], 'request': self.request}
+
+
+class CartItemRUDVIew(RetrieveUpdateDestroyAPIView):
+    queryset = cart_item.objects.all()
+    serializer_class = CartItemSerializer
+
+    def get_serializer_context(self):
+        return {'cart_id': self.kwargs['cart_pk'], 'request': self.request}
+
+
+"""-----------------------------------------------------------------"""

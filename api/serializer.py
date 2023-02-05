@@ -2,7 +2,7 @@ from abc import ABC
 from decimal import Decimal
 from rest_framework import serializers
 
-from api.models import Category, Product, Review
+from api.models import Category, Product, Review, Cart, cart_item
 
 """_______________________Category Serializer_____________________"""
 
@@ -105,3 +105,23 @@ class ReviewModelSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         product_id = self.context.get('product_id')
         return Review.objects.create(product_id=product_id, **validated_data)
+
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = ['id']
+
+
+class CartItemSerializer(serializers.ModelSerializer):
+    product = serializers.HyperlinkedRelatedField(queryset=Product.objects.all(), view_name='products-detail')
+
+    class Meta:
+        model = cart_item
+        fields = ['id','cart', 'product', 'quantity']
+        read_only_fields = ['cart', ]
+
+    def create(self, validated_data):
+        cart_id = self.context.get('cart_id')
+        print(cart_id)
+        return cart_item.objects.create(cart_id=cart_id, **validated_data)
