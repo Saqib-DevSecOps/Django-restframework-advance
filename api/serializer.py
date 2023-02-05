@@ -2,7 +2,7 @@ from abc import ABC
 from decimal import Decimal
 from rest_framework import serializers
 
-from api.models import Category, Product
+from api.models import Category, Product, Review
 
 """_______________________Category Serializer_____________________"""
 
@@ -55,7 +55,7 @@ class ProductMSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['title', 'price', 'inventory', 'category', 'price_tax']
+        fields = ['id', 'title', 'price', 'inventory', 'category', 'price_tax']
         read_only_fields = ['price_tax']
 
     # ________________Custom Methods_______________
@@ -89,3 +89,17 @@ class ProductMSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     # _______________________________________________
+
+
+""""--------------------Review Model Serializer----------------------"""
+
+
+class ReviewModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'product', 'name', 'description']
+        read_only_fields = ['product']
+
+    def create(self, validated_data):
+        product_id = self.context.get('product_id')
+        return Review.objects.create(product_id=product_id, **validated_data)

@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from api.models import Product, Category
-from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer
+from api.models import Product, Category, Review
+from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer, ReviewModelSerializer
 
 """--------------------Product Api View--------------------"""
 
@@ -290,8 +290,16 @@ class CategoryRetrieveUpdateDeleteApiView(RetrieveUpdateDestroyAPIView):
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
     serializer_class = ProductMSerializer
+
+    def get_queryset(self):
+        queryset = Product.objects.select_related('category').all()
+        # For Custom Filtering
+        category_id = self.request.query_params.get('category_id')
+        print(category_id)
+        if category_id:
+            return queryset.filter(category_id=category_id)
+        return queryset
 
 
 """------------------------------------------------------------------"""
@@ -302,6 +310,22 @@ class ProductViewSet(ModelViewSet):
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+"""------------------------------------------------------------------"""
+"""--------------------------CATEGORY VIEWSET API----------------------"""
+
+
+class ReviewModelViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewModelSerializer
+
+    def get_queryset(self):
+        query_set = self.queryset.select_related('product')
+        return query_set.filter(product_id=self.kwargs['product_pk'])
+
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs['product_pk']}
 
 
 """------------------------------------------------------------------"""
