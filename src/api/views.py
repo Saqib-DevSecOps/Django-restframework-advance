@@ -1,18 +1,17 @@
 import status
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import response, mixins
+from rest_framework import mixins
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import get_object_or_404, GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from api.models import Product, Category, Review, Cart, cart_item
-from api.filters import ProductFilter
-from api.pagination import DefaultPaginationCLass
-from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer, ReviewModelSerializer, \
+from src.api.models import Product, Category, Review, Cart, cart_item
+from src.api.filters import ProductFilter
+from src.api.pagination import DefaultPaginationCLass
+from src.api.serializer import CategorySerializer, ProductMSerializer, ReviewModelSerializer, \
     CartSerializer, CartItemSerializer, CartItemUpdateSerializer, CartItemAddSerializer
 
 """--------------------Product Api View--------------------"""

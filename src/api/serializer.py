@@ -1,10 +1,8 @@
-from abc import ABC
 from decimal import Decimal
-from uuid import uuid4
 
 from rest_framework import serializers
 
-from api.models import Category, Product, Review, Cart, cart_item
+from src.api.models import Category, Product, Review, Cart, cart_item
 
 """_______________________Category Serializer_____________________"""
 
