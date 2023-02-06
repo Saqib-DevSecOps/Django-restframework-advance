@@ -14,7 +14,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from django.utils.translation.trans_real import gettext
 
 from core import settings
-from src.accounts.models import User
+from src.accounts.models import User, Profile
 
 
 # Register your models here.
@@ -197,3 +197,4 @@ class UserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
+admin.site.register(Profile)

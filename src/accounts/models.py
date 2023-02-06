@@ -16,3 +16,12 @@ class User(AbstractUser):
         return self.first_name + " " + self.last_name
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile = models.ImageField(default=None, upload_to='profiles/')
+    dob = models.DateField(null=True,blank=True)
+    country = models.CharField(max_length=100)
+    city = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.user.username
