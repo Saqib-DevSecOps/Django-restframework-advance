@@ -1,5 +1,7 @@
 from abc import ABC
 from decimal import Decimal
+from uuid import uuid4
+
 from rest_framework import serializers
 
 from api.models import Category, Product, Review, Cart, cart_item
@@ -107,21 +109,47 @@ class ReviewModelSerializer(serializers.ModelSerializer):
         return Review.objects.create(product_id=product_id, **validated_data)
 
 
-class CartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cart
-        fields = ['id']
+""""--------------------CartItem Model Serializer----------------------"""
 
 
 class CartItemSerializer(serializers.ModelSerializer):
-    product = serializers.HyperlinkedRelatedField(queryset=Product.objects.all(), view_name='products-detail')
+    product_detail = ProductMSerializer(read_only=True, source='product')
+    total_price = serializers.SerializerMethodField(method_name='get_total_price')
 
     class Meta:
         model = cart_item
-        fields = ['id','cart', 'product', 'quantity']
-        read_only_fields = ['cart', ]
+        fields = ['id', 'product', 'product_detail', 'quantity', 'total_price']
+
+    def get_total_price(self, cart: cart_item):
+        return cart.quantity * cart.product.price
 
     def create(self, validated_data):
         cart_id = self.context.get('cart_id')
-        print(cart_id)
-        return cart_item.objects.create(cart_id=cart_id, **validated_data)
+        product_id = self.validated_data.get('product')
+        quantity = self.validated_data.get('quantity')
+        print(cart_id, product_id, quantity)
+        cart, created = cart_item.objects.get_or_create(cart_id=cart_id, product_id=product_id)
+        cart.quantity += quantity
+        return cart
+
+
+""""--------------------Cart Model Serializer----------------------"""
+
+
+class CartSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+    cart = CartItemSerializer(many=True, read_only=True)
+    total_price = serializers.SerializerMethodField(method_name='get_total_price')
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'cart', 'total_price']
+
+    def get_total_price(self, carts: Cart):
+        total = 0
+        for item in carts.cart.all():
+            total += item.quantity * item.product.price
+        return total
+
+    def create(self, validated_data):
+        return Cart.objects.create(**validated_data)

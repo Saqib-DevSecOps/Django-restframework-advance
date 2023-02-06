@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -49,7 +50,7 @@ class Cart(models.Model):
 class cart_item(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cart')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
-    quantity = models.IntegerField(default=0)
+    quantity = models.PositiveIntegerField(default=0,validators=[MinValueValidator(1)])
 
     def __str__(self):
         return self.product.title

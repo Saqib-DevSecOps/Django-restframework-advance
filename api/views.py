@@ -329,7 +329,7 @@ class ReviewModelViewSet(ModelViewSet):
 
 
 class CartModelViewSet(ModelViewSet):
-    queryset = Cart.objects.all()
+    queryset = Cart.objects.prefetch_related('cart').all()
     serializer_class = CartSerializer
 
 
@@ -341,7 +341,7 @@ class CartItemModelViewSet(ModelViewSet):
     serializer_class = CartItemSerializer
 
     def get_queryset(self):
-        return self.queryset.select_related('product')
+        return self.queryset.select_related('product').filter(cart_id=self.kwargs.get('cart_pk'))
 
     def get_serializer_context(self):
         return {'cart_id': self.kwargs['cart_pk'], 'request': self.request}
