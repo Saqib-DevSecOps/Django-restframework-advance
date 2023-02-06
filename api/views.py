@@ -13,7 +13,7 @@ from api.models import Product, Category, Review, Cart, cart_item
 from api.filters import ProductFilter
 from api.pagination import DefaultPaginationCLass
 from api.serializer import ProductSerializer, CategorySerializer, ProductMSerializer, ReviewModelSerializer, \
-    CartSerializer, CartItemSerializer
+    CartSerializer, CartItemSerializer, CartItemUpdateSerializer, CartItemAddSerializer
 
 """--------------------Product Api View--------------------"""
 
@@ -337,11 +337,18 @@ class CartModelViewSet(ModelViewSet):
 
 
 class CartItemModelViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch','delete']
     queryset = cart_item.objects.all()
-    serializer_class = CartItemSerializer
 
     def get_queryset(self):
         return self.queryset.select_related('product').filter(cart_id=self.kwargs.get('cart_pk'))
+
+    def get_serializer_class(self):
+        if self.request.method == "PATCH":
+            return CartItemUpdateSerializer
+        elif self.request.method == "POST":
+            return CartItemAddSerializer
+        return CartItemSerializer
 
     def get_serializer_context(self):
         return {'cart_id': self.kwargs['cart_pk'], 'request': self.request}
