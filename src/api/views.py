@@ -4,6 +4,7 @@ from rest_framework import mixins
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import get_object_or_404, GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated,IsAuthenticatedOrReadOnly,IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -330,6 +331,11 @@ class ReviewModelViewSet(ModelViewSet):
 class CartModelViewSet(ModelViewSet):
     queryset = Cart.objects.prefetch_related('cart').all()
     serializer_class = CartSerializer
+
+    def get_permissions(self):
+        if self.requests.method == "DELETE":
+            return [IsAdminUser]
+        return [IsAuthenticatedOrReadOnly]
 
 
 "--------------------------CartItem VIEWSET API----------------------"
