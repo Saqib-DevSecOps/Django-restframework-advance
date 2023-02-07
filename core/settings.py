@@ -42,8 +42,9 @@ INSTALLED_APPS = [
     'src.accounts.apps.AccountsConfig',
 
     'rest_framework',
+    'drf_yasg',
     'rest_framework.authtoken',
-    'djoser',
+    'exarth_rest_auth',
     'django_filters',
 ]
 REST_FRAMEWORK = {
