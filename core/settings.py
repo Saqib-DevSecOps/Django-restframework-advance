@@ -42,8 +42,20 @@ INSTALLED_APPS = [
     'src.accounts.apps.AccountsConfig',
 
     'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
     'django_filters',
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+
 AUTH_USER_MODEL = 'accounts.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -104,6 +116,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+DJOSER =  {
+    'SERIALIZERS' : {
+        'user_create' : 'src.accounts.serializers.CustomUserCreateSerializer'
+    }
+}
 
 
 # Internationalization
