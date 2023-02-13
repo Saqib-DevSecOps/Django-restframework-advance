@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from src.api.models import Category, Product, Review, Cart, cart_item
+from src.api.models import Category, Product, Review, Cart, cart_item, Order
 
 """_______________________Category Serializer_____________________"""
 
@@ -163,3 +163,14 @@ class CartSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Cart.objects.create(**validated_data)
+
+
+""""--------------------Order Model Serializer----------------------"""
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = [
+            'id', 'payment_status', 'placed_at'
+        ]

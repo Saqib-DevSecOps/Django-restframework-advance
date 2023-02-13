@@ -4,16 +4,16 @@ from rest_framework import mixins
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import get_object_or_404, GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticated,IsAuthenticatedOrReadOnly,IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from src.api.models import Product, Category, Review, Cart, cart_item
+from src.api.models import Product, Category, Review, Cart, cart_item, Order
 from src.api.filters import ProductFilter
 from src.api.pagination import DefaultPaginationCLass
 from src.api.serializer import CategorySerializer, ProductMSerializer, ReviewModelSerializer, \
-    CartSerializer, CartItemSerializer, CartItemUpdateSerializer, CartItemAddSerializer
+    CartSerializer, CartItemSerializer, CartItemUpdateSerializer, CartItemAddSerializer, OrderSerializer
 
 """--------------------Product Api View--------------------"""
 
@@ -342,7 +342,7 @@ class CartModelViewSet(ModelViewSet):
 
 
 class CartItemModelViewSet(ModelViewSet):
-    http_method_names = ['get', 'post', 'patch','delete']
+    http_method_names = ['get', 'post', 'patch', 'delete']
     queryset = cart_item.objects.all()
 
     def get_queryset(self):
@@ -379,3 +379,11 @@ class CartItemRUDVIew(RetrieveUpdateDestroyAPIView):
 
 
 """-----------------------------------------------------------------"""
+
+"--------------------------Order Generic API----------------------"
+
+
+class OrderModelViewSet(ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+

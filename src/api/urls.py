@@ -4,7 +4,7 @@ from rest_framework_nested.routers import NestedSimpleRouter
 
 from .views import ProductListCreateApiView, ProductRetrieveUpdateDeleteApiView, \
     CategoryRetrieveUpdateDeleteApiView, CategoryListCreateApiView, ProductViewSet, CategoryViewSet, ReviewModelViewSet, \
-    CartModelViewSet, CartItemModelViewSet, CartItemListVIew, CartItemRUDVIew
+    CartModelViewSet, CartItemModelViewSet, CartItemListVIew, CartItemRUDVIew, OrderModelViewSet
 
 # urlpatterns = [
 #     path("product/", ProductListCreateApiView.as_view()),
@@ -23,9 +23,11 @@ from .views import ProductListCreateApiView, ProductRetrieveUpdateDeleteApiView,
 """__________________ROUTERS FOR MODEL VIEWSET_____________________"""
 
 router = DefaultRouter()
+# base name is used for get the specific url like for product products-list,products-detail,etc
 router.register('products', ProductViewSet, basename='products')
 router.register('categories', CategoryViewSet, basename='categories')
 router.register('carts', CartModelViewSet, basename='carts')
+router.register('order', OrderModelViewSet, basename='order')
 urlpatterns = router.urls
 
 """------------------DRF NESTED ROUTER------------------------------"""
