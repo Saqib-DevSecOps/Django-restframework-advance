@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from django.contrib.auth.models import User
+from core.settings import AUTH_USER_MODEL
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -50,7 +50,22 @@ class Cart(models.Model):
 class cart_item(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cart')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
-    quantity = models.PositiveIntegerField(default=0,validators=[MinValueValidator(1)])
+    quantity = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1)])
 
     def __str__(self):
         return self.product.title
+
+
+class Order(models.Model):
+    payment_choice = (
+        ('p', 'pending'),
+        ('c', 'complete'),
+        ('f', 'failed')
+    )
+    placed_at = models.DateTimeField(auto_now_add=True)
+    payment_status = models.CharField(choices=payment_choice,max_length=20)
+    customer = models.ForeignKey(AUTH_USER_MODEL,on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.customer.username
+
