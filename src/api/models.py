@@ -63,9 +63,20 @@ class Order(models.Model):
         ('f', 'failed')
     )
     placed_at = models.DateTimeField(auto_now_add=True)
-    payment_status = models.CharField(choices=payment_choice,max_length=20)
-    customer = models.ForeignKey(AUTH_USER_MODEL,on_delete=models.PROTECT)
+    payment_status = models.CharField(choices=payment_choice, max_length=20)
+    customer = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.customer.username
+
+
+class OrderItem(models.Model):
+    customer = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    unit_price = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.customer.username
+
 
