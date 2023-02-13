@@ -9,11 +9,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from src.api.models import Product, Category, Review, Cart, cart_item, Order
+from src.api.models import Product, Category, Review, Cart, cart_item, Order, OrderItem
 from src.api.filters import ProductFilter
 from src.api.pagination import DefaultPaginationCLass
 from src.api.serializer import CategorySerializer, ProductMSerializer, ReviewModelSerializer, \
-    CartSerializer, CartItemSerializer, CartItemUpdateSerializer, CartItemAddSerializer, OrderSerializer
+    CartSerializer, CartItemSerializer, CartItemUpdateSerializer, CartItemAddSerializer, OrderSerializer, \
+    OrderItemSerializer
 
 """--------------------Product Api View--------------------"""
 
@@ -385,5 +386,19 @@ class CartItemRUDVIew(RetrieveUpdateDestroyAPIView):
 
 class OrderModelViewSet(ModelViewSet):
     queryset = Order.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = OrderSerializer
 
+    def get_serializer_context(self):
+        user = self.request.user.id
+        return {'user_id': user}
+
+
+class OrderItemModelViewSet(ModelViewSet):
+    queryset = OrderItem.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = OrderItemSerializer
+
+    def get_serializer_context(self):
+        user = self.request.user.id
+        return {'user_id': user}

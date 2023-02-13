@@ -4,7 +4,7 @@ from rest_framework_nested.routers import NestedSimpleRouter
 
 from .views import ProductListCreateApiView, ProductRetrieveUpdateDeleteApiView, \
     CategoryRetrieveUpdateDeleteApiView, CategoryListCreateApiView, ProductViewSet, CategoryViewSet, ReviewModelViewSet, \
-    CartModelViewSet, CartItemModelViewSet, CartItemListVIew, CartItemRUDVIew, OrderModelViewSet
+    CartModelViewSet, CartItemModelViewSet, CartItemListVIew, CartItemRUDVIew, OrderItemModelViewSet, OrderModelViewSet
 
 # urlpatterns = [
 #     path("product/", ProductListCreateApiView.as_view()),
@@ -38,5 +38,9 @@ product_router.register('reviews', ReviewModelViewSet, basename='product-reviews
 cart_router = NestedSimpleRouter(router, 'carts', lookup='cart')
 cart_router.register('items', CartItemModelViewSet, basename='cart-items')
 
+order_item_router = NestedSimpleRouter(router, 'order', lookup='order')
+order_item_router.register('order-items', OrderItemModelViewSet, basename='order=item')
+
 urlpatterns += product_router.urls
 urlpatterns += cart_router.urls
+urlpatterns += order_item_router.urls
